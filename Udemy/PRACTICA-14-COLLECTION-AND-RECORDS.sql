@@ -1,0 +1,41 @@
+SET SERVEROUTPUT ON
+
+DECLARE
+    TYPE EMPL_RECORD IS RECORD(
+        NAME VARCHAR2(100),
+        SAL employees.salary%TYPE,
+        COD_DEPT EMPLOYEES.department_id%TYPE
+    );
+    
+    TYPE EMPL_TABLE IS TABLE OF EMPL_RECORD
+        INDEX BY PLS_INTEGER;
+        
+    EMPL EMPL_TABLE;
+    
+BEGIN
+    FOR i IN 100..206 LOOP
+        select first_name || ' ' || last_name, salary, department_id into EMPL(i)
+        from employees
+        where employee_id=i;
+    END LOOP;
+    
+    FOR i IN EMPL.FIRST..EMPL.LAST LOOP 
+        DBMS_OUTPUT.PUT_LINE(EMPL(i).NAME||' '||EMPL(i).SAL||' '||EMPL(i).COD_DEPT); 
+    END LOOP;
+    
+    DBMS_OUTPUT.PUT_LINE('EL PRIMERO'); 
+    DBMS_OUTPUT.PUT_LINE(EMPL(EMPL.FIRST).NAME); 
+    DBMS_OUTPUT.PUT_LINE('EL ÚLTIMO');  
+    DBMS_OUTPUT.PUT_LINE(EMPL(EMPL.LAST).NAME);   
+    DBMS_OUTPUT.PUT_LINE('BORRAMOS LOS EMPLEADOS QUE GANEN MENOS DE 7000');  
+    DBMS_OUTPUT.PUT_LINE('ANTES'); 
+    DBMS_OUTPUT.PUT_LINE(EMPL.COUNT); 
+    
+    FOR i IN EMPL.FIRST..EMPL.LAST LOOP 
+        IF EMPL(i).SAL < 7000 THEN 
+        EMPL.DELETE(i) ; 
+        END IF; 
+    END LOOP; 
+    DBMS_OUTPUT.PUT_LINE('DESPUES'); 
+    DBMS_OUTPUT.PUT_LINE(EMPL.COUNT); 
+END;
